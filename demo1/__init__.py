@@ -6,7 +6,7 @@ import st3m.run
 import leds
 
 class MyDemo(Application):
-    COLOR_PAUSED = [200, 0, 0]
+    COLORS_PAUSED = [[200, 0, 0], [200, 200, 0], [0, 200, 0], [0, 200, 200], [0, 0, 200]]
     LEDS = 40
     RAINBOW_SHIFT_PER_FRAME = 19
 
@@ -21,6 +21,7 @@ class MyDemo(Application):
         self.brightness_inc = True
         self.brightness_rainbow = 255
         self.brightness_step = 16
+        self.colors_paused_idx = 0
 
         leds.set_slew_rate(1)
         self.leds_running()
@@ -30,11 +31,17 @@ class MyDemo(Application):
         ctx.rgb(0, 0, 0).rectangle(-120, -120, 240, 240).fill()
 
         if self.paused:
-            # Red square
-            ctx.rgb(255, 0, 0).rectangle(-20, -20, 40, 40).fill()
+            ctx.rgb(
+                self.COLORS_PAUSED[self.colors_paused_idx][0],
+                self.COLORS_PAUSED[self.colors_paused_idx][1],
+                self.COLORS_PAUSED[self.colors_paused_idx][2]
+            ).round_rectangle(-20, -20, 40, 40, 16).fill()
         else:
-            # Green square
-            ctx.rgb(0, 255, 0).rectangle(-20, -20, 40, 40).fill()
+            ctx.rgb(
+                self.COLORS_RAINBOW[0][0],
+                self.COLORS_RAINBOW[0][1],
+                self.COLORS_RAINBOW[0][2]
+            ).round_rectangle(-40, -40, 80, 80, 50).fill()
 
         self.frame_counter += 1
 
@@ -44,7 +51,12 @@ class MyDemo(Application):
         if self.input.buttons.app.middle.pressed:
             self.paused = not self.paused
 
-        if not self.paused:
+        if self.paused:
+            if self.input.buttons.app.left.pressed:
+                self.colors_paused_idx = (self.colors_paused_idx - 1) % len(self.COLORS_PAUSED)
+            if self.input.buttons.app.right.pressed:
+                self.colors_paused_idx = (self.colors_paused_idx + 1) % len(self.COLORS_PAUSED)
+        else:
             if self.input.buttons.app.left.pressed:
                 self.brightness_rainbow = max(
                     self.brightness_rainbow - self.brightness_step, 10)
@@ -79,9 +91,9 @@ class MyDemo(Application):
             self.brightness_inc = False
 
     def leds_paused(self) -> None:
-        leds.set_all_rgb(self.COLOR_PAUSED[0],
-                         self.COLOR_PAUSED[1],
-                         self.COLOR_PAUSED[2])
+        leds.set_all_rgb(self.COLORS_PAUSED[self.colors_paused_idx][0],
+                         self.COLORS_PAUSED[self.colors_paused_idx][1],
+                         self.COLORS_PAUSED[self.colors_paused_idx][2])
 
     def leds_running(self) -> None:
         if self.frame_counter % self.RAINBOW_SHIFT_PER_FRAME != 0:
