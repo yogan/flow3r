@@ -8,7 +8,7 @@ import leds
 class MyDemo(Application):
     COLOR_PAUSED = [200, 0, 0]
     LEDS = 40
-    RAINBOW_SHIFT_PER_FRAME = 23
+    RAINBOW_SHIFT_PER_FRAME = 19
 
     def __init__(self, app_ctx: ApplicationContext) -> None:
         super().__init__(app_ctx)
@@ -17,9 +17,10 @@ class MyDemo(Application):
 
         self.frame_counter = 0
         self.paused = False
-        self.brighness = 0
-        self.brighness_inc = True
+        self.brightness = 0
+        self.brightness_inc = True
 
+        leds.set_slew_rate(1)
         self.leds_running()
 
     def draw(self, ctx: Context) -> None:
@@ -33,9 +34,6 @@ class MyDemo(Application):
             # Green square
             ctx.rgb(0, 255, 0).rectangle(-20, -20, 40, 40).fill()
 
-        leds.set_brightness(self.brighness)
-        leds.update()
-
         self.frame_counter += 1
 
     def think(self, ins: InputState, delta_ms: int) -> None:
@@ -45,25 +43,35 @@ class MyDemo(Application):
             self.paused = not self.paused
 
         if self.paused:
-            step = max(int(delta_ms / 15), 1)
-            self.leds_fade(step, 30, 90)
+            leds.set_slew_rate(3)
+            step = max(int(delta_ms / 17), 1)
+            self.leds_fade(step, 10, 90)
             self.leds_paused()
         else:
-            self.brighness = 255
+            leds.set_slew_rate(1)
+            self.brightness = 255
             self.leds_running()
 
-    def leds_fade(self, step, min, max) -> None:
-        if self.brighness_inc:
-            self.brighness += step
-        else:
-            self.brighness -= step
+        leds.set_brightness(self.brightness)
+        leds.update()
 
-        if self.brighness < min:
-            self.brighness = min
-            self.brighness_inc = True
-        elif self.brighness > max:
-            self.brighness = max
-            self.brighness_inc = False
+    def leds_fade(self, step, min, max) -> None:
+        if self.brightness_inc:
+            self.brightness += step
+        else:
+            self.brightness -= step
+
+        if self.brightness < min:
+            self.brightness = min
+            self.brightness_inc = True
+        elif self.brightness > max:
+            self.brightness = max
+            self.brightness_inc = False
+
+    def leds_paused(self) -> None:
+        leds.set_all_rgb(self.COLOR_PAUSED[0],
+                         self.COLOR_PAUSED[1],
+                         self.COLOR_PAUSED[2])
 
     def leds_running(self) -> None:
         if self.frame_counter % self.RAINBOW_SHIFT_PER_FRAME != 0:
@@ -75,11 +83,6 @@ class MyDemo(Application):
                             self.COLORS_RAINBOW[i][2])
 
         self.COLORS_RAINBOW.insert(0, self.COLORS_RAINBOW.pop())
-
-    def leds_paused(self) -> None:
-        leds.set_all_rgb(self.COLOR_PAUSED[0],
-                         self.COLOR_PAUSED[1],
-                         self.COLOR_PAUSED[2])
 
 
 def generate_rainbow_colors(num_colors):
