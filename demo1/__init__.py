@@ -6,14 +6,17 @@ import st3m.run
 import leds
 
 class MyDemo(Application):
+    COLOR_RUNNING = [23, 69, 255]
+    COLOR_PAUSED = [200, 0, 0]
+    LEDS = 40
+
     def __init__(self, app_ctx: ApplicationContext) -> None:
         super().__init__(app_ctx)
+
         self.paused = False
-        self.LEDS = [[23, 69, 255] for i in range(40)]
-        for i in range(len(self.LEDS)):
-            leds.set_rgb(i, self.LEDS[i][0], self.LEDS[i][1], self.LEDS[i][2])
-        self.brighness = 0 # 0 to 255
+        self.brighness = 0           # 0 to 255
         self.brighness_inc = True
+        self.leds_running()
 
     def draw(self, ctx: Context) -> None:
         # Paint the background black
@@ -35,20 +38,37 @@ class MyDemo(Application):
         if self.input.buttons.app.middle.pressed:
             self.paused = not self.paused
 
-        if not self.paused:
-            # LED fading
-            step = int(delta_ms / 10)
-            if self.brighness_inc:
-                self.brighness += step
-            else:
-                self.brighness -= step
+        if self.paused:
+            self.leds_paused()
+        else:
+            step = int(delta_ms / 2)
+            self.leds_fade(step)
+            self.leds_running()
 
-            if self.brighness > 255:
-                self.brighness = 255
-                self.brighness_inc = False
-            elif self.brighness < 0:
-                self.brighness = 0
-                self.brighness_inc = True
+    def leds_fade(self, step) -> None:
+        if self.brighness_inc:
+            self.brighness += step
+        else:
+            self.brighness -= step
+
+        if self.brighness < 0:
+            self.brighness = 0
+            self.brighness_inc = True
+        elif self.brighness > 255:
+            self.brighness = 255
+            self.brighness_inc = False
+
+    def leds_running(self) -> None:
+        for i in range(self.LEDS):
+            leds.set_rgb(i, self.COLOR_RUNNING[0],
+                            self.COLOR_RUNNING[1],
+                            self.COLOR_RUNNING[2])
+
+    def leds_paused(self) -> None:
+        for i in range(self.LEDS):
+            leds.set_rgb(i, self.COLOR_PAUSED[0],
+                            self.COLOR_PAUSED[1],
+                            self.COLOR_PAUSED[2])
 
 if __name__ == '__main__':
     # Continue to make runnable via mpremote run.
