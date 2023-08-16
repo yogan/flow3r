@@ -6,16 +6,20 @@ import st3m.run
 import leds
 
 class MyDemo(Application):
-    COLOR_RUNNING = [23, 69, 255]
     COLOR_PAUSED = [200, 0, 0]
     LEDS = 40
+    RAINBOW_SHIFT_PER_FRAME = 23
 
     def __init__(self, app_ctx: ApplicationContext) -> None:
         super().__init__(app_ctx)
 
+        self.COLORS_RAINBOW = generate_rainbow_colors(self.LEDS)
+
+        self.frame_counter = 0
         self.paused = False
-        self.brighness = 0           # 0 to 255
+        self.brighness = 0
         self.brighness_inc = True
+
         self.leds_running()
 
     def draw(self, ctx: Context) -> None:
@@ -32,6 +36,8 @@ class MyDemo(Application):
         leds.set_brightness(self.brighness)
         leds.update()
 
+        self.frame_counter += 1
+
     def think(self, ins: InputState, delta_ms: int) -> None:
         super().think(ins, delta_ms)
 
@@ -39,36 +45,54 @@ class MyDemo(Application):
             self.paused = not self.paused
 
         if self.paused:
+            step = max(int(delta_ms / 15), 1)
+            self.leds_fade(step, 30, 90)
             self.leds_paused()
         else:
-            step = int(delta_ms / 2)
-            self.leds_fade(step)
+            self.brighness = 255
             self.leds_running()
 
-    def leds_fade(self, step) -> None:
+    def leds_fade(self, step, min, max) -> None:
         if self.brighness_inc:
             self.brighness += step
         else:
             self.brighness -= step
 
-        if self.brighness < 0:
-            self.brighness = 0
+        if self.brighness < min:
+            self.brighness = min
             self.brighness_inc = True
-        elif self.brighness > 255:
-            self.brighness = 255
+        elif self.brighness > max:
+            self.brighness = max
             self.brighness_inc = False
 
     def leds_running(self) -> None:
+        if self.frame_counter % self.RAINBOW_SHIFT_PER_FRAME != 0:
+            return
+
         for i in range(self.LEDS):
-            leds.set_rgb(i, self.COLOR_RUNNING[0],
-                            self.COLOR_RUNNING[1],
-                            self.COLOR_RUNNING[2])
+            leds.set_rgb(i, self.COLORS_RAINBOW[i][0],
+                            self.COLORS_RAINBOW[i][1],
+                            self.COLORS_RAINBOW[i][2])
+
+        self.COLORS_RAINBOW.insert(0, self.COLORS_RAINBOW.pop())
 
     def leds_paused(self) -> None:
         for i in range(self.LEDS):
             leds.set_rgb(i, self.COLOR_PAUSED[0],
                             self.COLOR_PAUSED[1],
                             self.COLOR_PAUSED[2])
+
+
+def generate_rainbow_colors(num_colors):
+    rainbow_colors = []
+    for i in range(num_colors):
+        angle = 2 * 3.14159 * i / num_colors  # Angle in radians
+        red = int((1 + 0.5 * (1 - abs((angle / 3.14159) % 2 - 1))) * 255)
+        green = int((1 + 0.5 * (1 - abs((angle / 3.14159 - 2 / 3) % 2 - 1))) * 255)
+        blue = int((1 + 0.5 * (1 - abs((angle / 3.14159 - 4 / 3) % 2 - 1))) * 255)
+        rainbow_colors.append([red, green, blue])
+    return rainbow_colors
+
 
 if __name__ == '__main__':
     # Continue to make runnable via mpremote run.
