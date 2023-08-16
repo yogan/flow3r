@@ -19,6 +19,8 @@ class MyDemo(Application):
         self.paused = False
         self.brightness = 0
         self.brightness_inc = True
+        self.brightness_rainbow = 255
+        self.brightness_step = 5
 
         leds.set_slew_rate(1)
         self.leds_running()
@@ -39,6 +41,13 @@ class MyDemo(Application):
     def think(self, ins: InputState, delta_ms: int) -> None:
         super().think(ins, delta_ms)
 
+        direction = ins.buttons.app
+
+        if direction == ins.buttons.PRESSED_LEFT:
+            self.brightness_rainbow = max(self.brightness_rainbow - self.brightness_step, 0)
+        elif direction == ins.buttons.PRESSED_RIGHT:
+            self.brightness_rainbow = min(self.brightness_rainbow + self.brightness_step, 255)
+
         if self.input.buttons.app.middle.pressed:
             self.paused = not self.paused
 
@@ -49,7 +58,7 @@ class MyDemo(Application):
             self.leds_paused()
         else:
             leds.set_slew_rate(1)
-            self.brightness = 255
+            self.brightness = self.brightness_rainbow
             self.leds_running()
 
         leds.set_brightness(self.brightness)
