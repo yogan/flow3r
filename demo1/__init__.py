@@ -77,10 +77,9 @@ class MyDemo(Application):
         self.COLORS_RAINBOW.insert(0, self.COLORS_RAINBOW.pop())
 
     def leds_paused(self) -> None:
-        for i in range(self.LEDS):
-            leds.set_rgb(i, self.COLOR_PAUSED[0],
-                            self.COLOR_PAUSED[1],
-                            self.COLOR_PAUSED[2])
+        leds.set_all_rgb(self.COLOR_PAUSED[0],
+                         self.COLOR_PAUSED[1],
+                         self.COLOR_PAUSED[2])
 
 
 def generate_rainbow_colors(num_colors):
