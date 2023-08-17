@@ -29,6 +29,19 @@ class GameOfLifeRainbow(Application):
         [0.9, 0.0, 0.0],  # red
     ]
 
+    RED_COLORS = [
+        [1.0, 0.0, 0.0],
+        [0.9, 0.0, 0.0],
+        [0.82, 0.2, 0.0],
+        [0.8, 0.0, 0.1],
+        [0.7, 0.2, 0.0],
+        [0.6, 0.1, 0.2],
+        [0.6, 0.1, 0.2],
+        [0.5, 0.0, 0.3],
+        [0.4, 0.1, 0.15],
+        [0.4, 0.0, 0.2],
+    ]
+
     GRID_SIZE = 24
     INITIAL_CELLS = 77
     LEDS = 40
@@ -199,16 +212,14 @@ class GameOfLifeRainbow(Application):
                 grid_y = y * cell_size - 120
                 if self.grid[y][x] > 0:
                     alpha = 1 - (self.grid[y][x] / self.MAX_AGE)
-                    if self.paused:
-                        alpha *= 0.333
                     idx = (self.grid[y][x] - 1) % len(self.CELL_COLORS)
-                    c = self.CELL_COLORS[idx]
+                    c = self.RED_COLORS[idx] if self.paused else self.CELL_COLORS[idx]
                     ctx.rgba(c[0], c[1], c[2], alpha).rectangle(
                         grid_x, grid_y, cell_size, cell_size
                     ).fill()
                 else:
-                    alpha = 0.09 if self.paused else 0.3
-                    ctx.rgba(0.42, 0.07, 0.18, alpha).rectangle(
+                    alpha = 0.1 if self.paused else 0.3
+                    ctx.rgba(0.42, 0.08, 0.17, alpha).rectangle(
                         grid_x, grid_y, cell_size, cell_size
                     ).stroke()
 
