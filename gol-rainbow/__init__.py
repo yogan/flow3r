@@ -17,16 +17,16 @@ class GameOfLifeRainbow(Application):
     ]
 
     CELL_COLORS = [
-        [0.9, 0.0, 0.0],  # red
-        [1.0, 0.5, 0.0],  # orange
-        [0.9, 0.9, 0.0],  # yellow
-        [0.5, 1.0, 0.0],  # lime
-        [0.0, 0.9, 0.0],  # green
-        [0.0, 1.0, 0.5],  # teal
-        [0.0, 0.9, 0.9],  # cyan
-        [0.0, 0.5, 1.0],  # sky
-        [0.0, 0.0, 0.9],  # blue
         [0.5, 0.0, 1.0],  # purple
+        [0.0, 0.0, 0.9],  # blue
+        [0.0, 0.5, 1.0],  # sky
+        [0.0, 0.9, 0.9],  # cyan
+        [0.0, 1.0, 0.5],  # teal
+        [0.0, 0.9, 0.0],  # green
+        [0.5, 1.0, 0.0],  # lime
+        [0.9, 0.9, 0.0],  # yellow
+        [1.0, 0.5, 0.0],  # orange
+        [0.9, 0.0, 0.0],  # red
     ]
 
     GRID_SIZE = 24
@@ -207,7 +207,7 @@ class GameOfLifeRainbow(Application):
                         grid_x, grid_y, cell_size, cell_size
                     ).fill()
                 else:
-                    alpha = 0.05 if self.paused else 0.4
+                    alpha = 0.09 if self.paused else 0.3
                     ctx.rgba(0.42, 0.07, 0.18, alpha).rectangle(
                         grid_x, grid_y, cell_size, cell_size
                     ).stroke()
