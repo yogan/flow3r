@@ -15,8 +15,20 @@ class MyDemo(Application):
         [0, 200, 200],
         [0, 0, 200],
     ]
-    COLOR_GRID_ACTIVE = [210, 220, 250]
-    COLOR_GRID_INACTIVE = [99, 13, 42]
+
+    CELL_COLORS = [
+        [0.9, 0.0, 0.0], # red
+        [1.0, 0.5, 0.0], # orange
+        [0.9, 0.9, 0.0], # yellow
+        [0.5, 1.0, 0.0], # lime
+        [0.0, 0.9, 0.0], # green
+        [0.0, 1.0, 0.5], # teal
+        [0.0, 0.9, 0.9], # cyan
+        [0.0, 0.5, 1.0], # sky
+        [0.0, 0.0, 0.9], # blue
+        [0.5, 0.0, 1.0], # purple
+    ]
+
     GRID_SIZE = 24
     INITIAL_CELLS = 100
     LEDS = 40
@@ -52,13 +64,7 @@ class MyDemo(Application):
         if not self.paused and self.frame_counter % self.speed == 0:
             self.evolve()
 
-        cell_color = (
-            self.COLOR_GRID_INACTIVE
-            if self.paused
-            else self.COLORS_RAINBOW[0]
-        )
-        self.draw_grid(ctx, cell_color)
-
+        self.draw_grid(ctx)
         self.frame_counter += 1
 
     def think(self, ins: InputState, delta_ms: int) -> None:
@@ -148,10 +154,12 @@ class MyDemo(Application):
                 num_neighbors = self.count_neighbors(x, y)
                 if self.grid[y][x]:
                     if num_neighbors < 2 or num_neighbors > 3:
-                        new_grid[y][x] = False
+                        new_grid[y][x] = 0
+                    else:
+                        new_grid[y][x] += 1
                 else:
                     if num_neighbors == 3:
-                        new_grid[y][x] = True
+                        new_grid[y][x] += 1
                         alive_cells += 1
 
         # write back grid or generate a new one if everything is dead
@@ -182,20 +190,25 @@ class MyDemo(Application):
                         num_neighbors += 1
         return num_neighbors
 
-    def draw_grid(self, ctx: Context, cell_color) -> None:
+    def draw_grid(self, ctx: Context) -> None:
         cell_size = round(240 / self.GRID_SIZE)
 
         for y in range(self.GRID_SIZE):
             for x in range(self.GRID_SIZE):
                 grid_x = x * cell_size - 120
                 grid_y = y * cell_size - 120
-                if self.grid[y][x]:
-                    c = [x / 255 for x in cell_color]
-                    ctx.rgb(c[0], c[1], c[2]).rectangle(
+                if self.grid[y][x] > 0:
+                    alpha = 1 - (self.grid[y][x] / self.MAX_AGE)
+                    if self.paused:
+                        alpha *= 0.333
+                    idx = (self.grid[y][x] - 1) % len(self.CELL_COLORS)
+                    c = self.CELL_COLORS[idx]
+                    ctx.rgba(c[0], c[1], c[2], alpha).rectangle(
                         grid_x, grid_y, cell_size, cell_size
                     ).fill()
                 else:
-                    ctx.rgba(0.7, 0.2, 0.35, 0.8).rectangle(
+                    alpha = 0.05 if self.paused else 0.4
+                    ctx.rgba(0.42, 0.07, 0.18, alpha).rectangle(
                         grid_x, grid_y, cell_size, cell_size
                     ).stroke()
 
@@ -212,7 +225,7 @@ def generate_rainbow_colors(num_colors):
 
 
 def generate_empty_grid(size):
-    row = [False for _ in range(size)]
+    row = [0 for _ in range(size)]
     grid = []
     for _ in range(size):
         grid.append(row.copy())
