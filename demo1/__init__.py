@@ -17,8 +17,8 @@ class MyDemo(Application):
     ]
     COLOR_GRID_ACTIVE = [210, 220, 250]
     COLOR_GRID_INACTIVE = [99, 13, 42]
-    GRID_SIZE = 16
-    INITIAL_CELLS = 42
+    GRID_SIZE = 24
+    INITIAL_CELLS = 128
     LEDS = 40
     RAINBOW_SHIFT_PER_FRAME = 19
 
@@ -30,7 +30,7 @@ class MyDemo(Application):
         self.grid = fill_some_cells(
             generate_empty_grid(self.GRID_SIZE), self.INITIAL_CELLS
         )
-        self.speed = 3
+        self.speed = 2
 
         self.frame_counter = 0
         self.paused = False
