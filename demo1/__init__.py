@@ -18,9 +18,10 @@ class MyDemo(Application):
     COLOR_GRID_ACTIVE = [210, 220, 250]
     COLOR_GRID_INACTIVE = [99, 13, 42]
     GRID_SIZE = 24
-    INITIAL_CELLS = 128
+    INITIAL_CELLS = 100
     LEDS = 40
     RAINBOW_SHIFT_PER_FRAME = 19
+    MAX_AGE = 1000
 
     def __init__(self, app_ctx: ApplicationContext) -> None:
         super().__init__(app_ctx)
@@ -31,6 +32,7 @@ class MyDemo(Application):
             generate_empty_grid(self.GRID_SIZE), self.INITIAL_CELLS
         )
         self.speed = 2
+        self.age = 0
 
         self.frame_counter = 0
         self.paused = False
@@ -138,6 +140,7 @@ class MyDemo(Application):
             new_grid.append(row.copy())
 
         alive_cells = 0
+        self.age += 1
 
         # count neighbors and apply rules
         for y in range(self.GRID_SIZE):
@@ -154,11 +157,14 @@ class MyDemo(Application):
         # write back grid or generate a new one if everything is dead
         self.grid = (
             new_grid
-            if alive_cells > 0
+            if alive_cells > 0 and self.age < self.MAX_AGE
             else fill_some_cells(
                 generate_empty_grid(self.GRID_SIZE), self.INITIAL_CELLS
             )
         )
+
+        if self.age == self.MAX_AGE:
+            self.age = 0
 
     def count_neighbors(self, x, y) -> int:
         num_neighbors = 0
