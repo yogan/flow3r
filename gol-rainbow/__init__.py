@@ -7,7 +7,7 @@ import st3m.run
 import leds
 
 
-class MyDemo(Application):
+class GameOfLifeRainbow(Application):
     COLORS_PAUSED = [
         [200, 0, 0],
         [200, 200, 0],
@@ -17,16 +17,16 @@ class MyDemo(Application):
     ]
 
     CELL_COLORS = [
-        [0.9, 0.0, 0.0], # red
-        [1.0, 0.5, 0.0], # orange
-        [0.9, 0.9, 0.0], # yellow
-        [0.5, 1.0, 0.0], # lime
-        [0.0, 0.9, 0.0], # green
-        [0.0, 1.0, 0.5], # teal
-        [0.0, 0.9, 0.9], # cyan
-        [0.0, 0.5, 1.0], # sky
-        [0.0, 0.0, 0.9], # blue
-        [0.5, 0.0, 1.0], # purple
+        [0.9, 0.0, 0.0],  # red
+        [1.0, 0.5, 0.0],  # orange
+        [0.9, 0.9, 0.0],  # yellow
+        [0.5, 1.0, 0.0],  # lime
+        [0.0, 0.9, 0.0],  # green
+        [0.0, 1.0, 0.5],  # teal
+        [0.0, 0.9, 0.9],  # cyan
+        [0.0, 0.5, 1.0],  # sky
+        [0.0, 0.0, 0.9],  # blue
+        [0.5, 0.0, 1.0],  # purple
     ]
 
     GRID_SIZE = 24
@@ -243,4 +243,4 @@ def fill_some_cells(grid, num_cells):
 
 if __name__ == "__main__":
     # Continue to make runnable via mpremote run.
-    st3m.run.run_view(MyDemo(ApplicationContext()))
+    st3m.run.run_view(GameOfLifeRainbow(ApplicationContext()))

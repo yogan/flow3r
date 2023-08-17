@@ -1,0 +1,11 @@
+[app]
+name = "Game of Rainbows"
+menu = "Apps"
+
+[entry]
+class = "GameOfLifeRainbow"
+
+[metadata]
+author = "yogan"
+license = "MIT"
+url = "https://github.com/yogan/flow3r"
