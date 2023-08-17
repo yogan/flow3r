@@ -137,6 +137,8 @@ class MyDemo(Application):
         for row in self.grid:
             new_grid.append(row.copy())
 
+        alive_cells = 0
+
         # count neighbors and apply rules
         for y in range(self.GRID_SIZE):
             for x in range(self.GRID_SIZE):
@@ -147,9 +149,16 @@ class MyDemo(Application):
                 else:
                     if num_neighbors == 3:
                         new_grid[y][x] = True
+                        alive_cells += 1
 
-        # write back grid
-        self.grid = new_grid
+        # write back grid or generate a new one if everything is dead
+        self.grid = (
+            new_grid
+            if alive_cells > 0
+            else fill_some_cells(
+                generate_empty_grid(self.GRID_SIZE), self.INITIAL_CELLS
+            )
+        )
 
     def count_neighbors(self, x, y) -> int:
         num_neighbors = 0
