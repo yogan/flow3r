@@ -53,7 +53,7 @@ class MyDemo(Application):
         cell_color = (
             self.COLOR_GRID_INACTIVE
             if self.paused
-            else self.COLORS_RAINBOW[self.frame_counter % self.LEDS]
+            else self.COLORS_RAINBOW[0]
         )
         self.draw_grid(ctx, cell_color)
 
@@ -176,7 +176,7 @@ class MyDemo(Application):
                         num_neighbors += 1
         return num_neighbors
 
-    def draw_grid(self, ctx: Context, color) -> None:
+    def draw_grid(self, ctx: Context, cell_color) -> None:
         cell_size = round(240 / self.GRID_SIZE)
 
         for y in range(self.GRID_SIZE):
@@ -184,11 +184,12 @@ class MyDemo(Application):
                 grid_x = x * cell_size - 120
                 grid_y = y * cell_size - 120
                 if self.grid[y][x]:
-                    ctx.rgb(color[0], color[1], color[2]).rectangle(
+                    c = [x / 255 for x in cell_color]
+                    ctx.rgb(c[0], c[1], c[2]).rectangle(
                         grid_x, grid_y, cell_size, cell_size
                     ).fill()
                 else:
-                    ctx.gray(0.4).rectangle(
+                    ctx.rgba(0.7, 0.2, 0.35, 0.8).rectangle(
                         grid_x, grid_y, cell_size, cell_size
                     ).stroke()
 
