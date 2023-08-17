@@ -30,10 +30,10 @@ class GameOfLifeRainbow(Application):
     ]
 
     GRID_SIZE = 24
-    INITIAL_CELLS = 100
+    INITIAL_CELLS = 77
     LEDS = 40
-    RAINBOW_SHIFT_PER_FRAME = 19
-    MAX_AGE = 1000
+    RAINBOW_SHIFT_PER_FRAME = 17
+    MAX_AGE = 100
 
     def __init__(self, app_ctx: ApplicationContext) -> None:
         super().__init__(app_ctx)
